@@ -1,6 +1,10 @@
 #Antonio meg hozzaadta a venv en kivul
 models
 *.pyc
+venv
+models
+*.pyc
+app/.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
