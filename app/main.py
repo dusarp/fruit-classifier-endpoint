@@ -1,24 +1,27 @@
+from pydantic import BaseModel # this has nothing to do my machine learning models
+# this is just the parent class for everything that is strictly typed in Pydantic
 from fastapi import FastAPI, Depends, UploadFile, File
-from pydantic import BaseModel
 from torchvision import transforms
 from torchvision.models import ResNet
+# we need this to upload images to fastAPI
+# this is the Python image library
 from PIL import Image
-import io
 import torch
-import torch.nn.functional as F
-
 from app.model import load_model, load_transforms, CATEGORIES
-
-
+import torch.nn.functional as F
+import io
+# This is what we use the BaseModel for
+# the result is strictly typed so that it returns
+# a string for the category (label that we predict)
+# and a float for the confidence (the probability for the label)
 class Result(BaseModel):
     category: str
     confidence: float
-
-
+# this creates an instance for the endpoint
 app = FastAPI()
-
-
-@app.post("/predict", response_model=Result)
+# response_model is a pydantic BaseModel, not a machine learning model
+# is the POST response that we are defining with class Result(BaseModel)
+@app.post('/predict', response_model=Result )
 async def predict(
         input_image: UploadFile = File(...),
         model: ResNet = Depends(load_model),
@@ -44,4 +47,3 @@ async def predict(
     category = CATEGORIES[predicted_class.item()]
 
     return Result(category=category, confidence=confidence.item())
-
